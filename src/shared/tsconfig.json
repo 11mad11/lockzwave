@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES6",
+    "noImplicitAny": true,
+    //"moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "../../dist/shared",
+    "baseUrl": ".",
+    "lib": ["ES2015"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "composite": true,
+    "declarationMap": true
+  },
+  "include": [
+    "./**/*"
+  ],
+  "exclude": ["../../node_modules", "**/*.d.ts"]
+}

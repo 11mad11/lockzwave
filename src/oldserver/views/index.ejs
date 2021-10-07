@@ -1,0 +1,66 @@
+
+<section>
+    <table id="state">
+
+    </table>
+</section>
+
+<details open>
+    <summary>Actions/Links</summary>
+
+    <form method="post" action="/refresh">
+        <button type="submit">Refresh Nodes</button>
+    </form>
+    <form method="post" action="/inclusion">
+        <button type="submit">inclusion</button>
+    </form>
+    <form method="post" action="/exclusion">
+        <button type="submit">exclusion</button>
+    </form>
+    <a href="/debug" target="_blank">debug</a>
+</details>
+
+
+
+<% nodes.forEach(function(node){ %>
+    <details>
+        <summary><%= node.nodeId%> - <%= node.deviceConfig && node.deviceConfig.label %></summary>
+
+    </details>
+<% }); %>
+
+<script>
+
+    setInterval(async ()=>{
+		const result = await fetch("/state.json");
+		const state = await result.json()
+		//console.log(state);
+		document.getElementById("state").innerHTML = ([
+			"<tr>"+Object.keys(state).map(k=>`<th>${k}</th>`).join("")+"</tr>",
+			"<tr>"+Object.values(state).map(k=>`<td>${k}</td>`).join("")+"</tr>",
+        ]).join("")
+    },2000);
+
+</script>
+
+<style>
+    details,section{
+        margin-bottom: 2rem;
+        padding: 1rem;
+        border: 1px solid black;
+    }
+    details[open]>summary{
+        margin-bottom: 1rem;
+    }
+    summary{
+        background-color: aliceblue;
+    }
+
+    #state{
+        border-collapse: collapse;
+    }
+    #state td,#state th{
+        border: 1px solid black;
+        padding: .2rem;
+    }
+</style>
