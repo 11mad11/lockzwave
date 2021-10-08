@@ -30,3 +30,9 @@ export function createLock() {
         }
     }
 }
+
+export async function sleep(i: number) {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, i);
+    })
+}

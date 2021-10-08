@@ -23,12 +23,12 @@ export async function init(config?: Config): Promise<Driver> {
     if (!config)
         throw new Error("need config to initiate")
     
-    driver = new Driver(config.config.driver.port ||  "/dev/ttyUSB0", {
+    driver = new Driver(config.config?.driver?.port ||  "/dev/ttyUSB0", {
         securityKeys: {
-            S2_Unauthenticated: Buffer.from(config.config.driver.S2_Unauthenticated ||  "11223344556677889900aabbccddeeff", "hex",),
-            S2_Authenticated: Buffer.from(config.config.driver.S2_Authenticated ||  "10203040506070809000a0b0c0d0e0f0", "hex",),
-            S2_AccessControl: Buffer.from(config.config.driver.S2_AccessControl ||  "aaaabbbbccccdddd1111222233334444", "hex",),
-            S0_Legacy: Buffer.from(config.config.driver.S0_Legacy ||  "0102030405060708090a0b0c0d0e0f10", "hex"),
+            S2_Unauthenticated: Buffer.from(config.config?.driver?.S2_Unauthenticated ||  "11223344556677889900aabbccddeeff", "hex",),
+            S2_Authenticated: Buffer.from(config.config?.driver?.S2_Authenticated ||  "10203040506070809000a0b0c0d0e0f0", "hex",),
+            S2_AccessControl: Buffer.from(config.config?.driver?.S2_AccessControl ||  "aaaabbbbccccdddd1111222233334444", "hex",),
+            S0_Legacy: Buffer.from(config.config?.driver?.S0_Legacy ||  "0102030405060708090a0b0c0d0e0f10", "hex"),
         }
     });
     
@@ -43,7 +43,7 @@ export async function init(config?: Config): Promise<Driver> {
         });
         driver.start();
         driver.updateLogConfig({
-            level: config.config.driver.logLevel || 0
+            level: config.config?.driver?.logLevel || 0
         });
     });
     

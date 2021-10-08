@@ -1,6 +1,6 @@
 import {io, Socket} from "socket.io-client";
 import {init} from "./main";
-import {DoorLockMode, Driver} from "zwave-js";
+import {DoorLockMode, Driver, InclusionStrategy} from "zwave-js";
 import {ControllerEmitEvents, ControllerListenEvents} from "../shared/ControllerEventsMap";
 import {Config} from "./Config";
 
@@ -9,10 +9,10 @@ declare module "./Config" {
         socket: {
             url: string
         },
-        state:{
-            nodes:{
-                [nodeId:number]: {
-                    t:5
+        state: {
+            nodes: {
+                [nodeId: number]: {
+                    t: 5
                 }
             }
         }
@@ -23,7 +23,8 @@ declare module "./Config" {
     const config = new Config();
     const driver = await init(config);
     
-    const socket: Socket<ControllerListenEvents, ControllerEmitEvents> = io(config.config.socket.url ||  "http://localhost:3000");
+    const socket: Socket<ControllerListenEvents, ControllerEmitEvents> = io(config.config?.socket?.url || "https://zwave-server.cap.11mad11.com/");
+    
     
     socket.on("connect", () => {
         // ...
@@ -32,62 +33,76 @@ declare module "./Config" {
     registerEvent(socket, driver);
     
     socket.on("info", () => {
-        socket.emit("info", "My info", process.env,config.config.state);
+        socket.emit("info", "My info", process.env);
     });
     
-    socket.on("lock", () => {
-        console.log("lock cmd")
-        driver.controller.nodes.get(6).commandClasses["Door Lock"].set(DoorLockMode.Secured);
+    socket.on("exclusion", async () => {
+        console.log("exclusion cmd")
+        try {
+            await driver.controller.stopInclusion();
+            await driver.controller.stopInclusion();
+            await driver.controller.beginExclusion()
+        } catch (e) {
+            socket.emit("error", e?.message);
+        }
     });
-    socket.on("unlock", () => {
-        console.log("unlock cmd")
-        driver.controller.nodes.get(6).commandClasses["Door Lock"].set(DoorLockMode.Unsecured);
+    socket.on("inclusion", async () => {
+        console.log("inclusion cmd")
+        try {
+            await driver.controller.stopInclusion();
+            await driver.controller.stopExclusion();
+            await driver.controller.beginInclusion({
+                strategy: InclusionStrategy.Insecure
+            })
+        } catch (e) {
+            socket.emit("error", e?.message);
+        }
     });
 })();
 
 function registerEvent(socket: Socket<ControllerListenEvents, ControllerEmitEvents>, driver: Driver) {
     driver.on("all nodes ready", () => {
-        socket.emit("all nodes ready");
+        socket.volatile.emit("all nodes ready");
     });
     driver.on("error", (err) => {
-        socket.emit("error", err.message);
+        socket.volatile.emit("error", err.message);
     });
     
     driver.controller.on("exclusion started", () => {
-        socket.emit("exclusion started");
+        socket.volatile.emit("exclusion started");
     });
     driver.controller.on("exclusion stopped", () => {
-        socket.emit("exclusion stopped");
+        socket.volatile.emit("exclusion stopped");
     });
     driver.controller.on("exclusion failed", () => {
-        socket.emit("exclusion failed");
+        socket.volatile.emit("exclusion failed");
     });
     
     driver.controller.on("inclusion started", (secure, strategy) => {
-        socket.emit("inclusion started", secure, strategy);
+        socket.volatile.emit("inclusion started", secure, strategy);
     });
     driver.controller.on("inclusion stopped", () => {
-        socket.emit("inclusion stopped");
+        socket.volatile.emit("inclusion stopped");
     });
     driver.controller.on("inclusion failed", () => {
-        socket.emit("inclusion failed");
+        socket.volatile.emit("inclusion failed");
     });
     
     driver.controller.on("node added", (node, result) => {
-        socket.emit("node added", node.nodeId, result);
+        socket.volatile.emit("node added", node.nodeId, result);
     });
     driver.controller.on("node removed", (node, replaced) => {
-        socket.emit("node removed", node.nodeId, replaced);
+        socket.volatile.emit("node removed", node.nodeId, replaced);
     });
     
     driver.controller.on("heal network progress", (progress) => {
-        socket.emit("heal network progress", Object.fromEntries(progress));
+        socket.volatile.emit("heal network progress", Object.fromEntries(progress));
     });
     driver.controller.on("heal network done", (result) => {
-        socket.emit("heal network done", Object.fromEntries(result));
+        socket.volatile.emit("heal network done", Object.fromEntries(result));
     });
     
     driver.controller.on("statistics updated", (statistics) => {
-        socket.emit("statistics updated", statistics);
+        socket.volatile.emit("statistics updated", statistics);
     });
 }
