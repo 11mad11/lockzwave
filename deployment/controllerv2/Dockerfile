@@ -1,14 +1,32 @@
-FROM ubuntu:20.10
+FROM node:16 as build
+WORKDIR /app
 
-RUN apt-get update
-RUN apt-get install git -y
+COPY ["./package.json", "./package-lock.json*", "./"]
+RUN npm install
 
-RUN git clone https://github.com/eringr/pidock.git
-RUN cd pidlock
+COPY ./src ./src
+RUN npm run build:controller
 
-ADD ./content ./
+FROM scratch
 
-RUN ./pidock.py extract --img ./2021-06-30-Comitup.img
-RUN ./pidock.py build --passwd lithdomo
-RUN ./pidock.py compose --host lithdomo
+USER root
+ADD root.tar /
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+RUN apt-get update && apt-get install wget nodejs -y
 
+RUN wget -r https://davesteele.github.io/comitup/latest/comitup_latest.html
+RUN dpkg -i davesteele.github.io/comitup/deb/comitup_*.deb; exit 0
+RUN apt-get -f install -y
+
+RUN rm /etc/wpa_supplicant/wpa_supplicant.conf
+
+ARG PI_PASSWORD
+RUN echo "pi:${PI_PASSWORD}" | chpasswd
+
+ADD deployment/controllerv2/root-overlay /
+RUN chown -R pi /home/pi
+
+WORKDIR /app
+COPY --from=build ./app/dist ./app/node_modules ./
+
+CMD ["node","./dist/controller/index.js"]
