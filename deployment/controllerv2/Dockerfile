@@ -27,6 +27,7 @@ ADD deployment/controllerv2/root-overlay /
 RUN chown -R pi /home/pi
 
 WORKDIR /app
-COPY --from=build ./app/dist ./app/node_modules ./
+COPY --from=build ./app/dist ./dist
+COPY --from=build ./app/node_modules ./node_modules
 
 CMD ["node","./dist/controller/index.js"]
