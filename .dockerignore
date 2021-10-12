@@ -1,4 +1,6 @@
 .git
-raspbian.img
+img/**/*
 custom.img
 custom-root.tar
+dist
+node_modules
