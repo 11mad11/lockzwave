@@ -1,0 +1,13 @@
+[Unit]
+Description=Controller for z-wave network
+Documentation=https://lithiummarketing.com
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/bin/node /app/dist/controller/index.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -16,6 +16,7 @@ Controller
 ````
 ./deployment/controllerv2/pidock.py all --img ./img/2021-05-07-raspios-buster-armhf-lite.img --passwd lithdomo --host lithdomo --dev /dev/null
 ````
+while running change partition size
 
 Admin
 ---

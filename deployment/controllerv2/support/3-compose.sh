@@ -47,7 +47,7 @@ echo "Creating custom image"
 
 # Initialize image file
 if [ ! -f "${CUSTOM_IMG_NAME}" ] ; then
-    dd if=/dev/zero of=./${CUSTOM_IMG_NAME} bs=2M count=${CUSTOM_IMG_SIZE}
+    dd if=/dev/zero of=./${CUSTOM_IMG_NAME} bs=1M count=${CUSTOM_IMG_SIZE}
 fi
 
 # Copying partition table from base Raspbian image (saved in 'extract')
