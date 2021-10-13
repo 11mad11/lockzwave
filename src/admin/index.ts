@@ -16,8 +16,8 @@ const state: State = {
 
 const modifiers: Record<MenuState, Modifier[]> = mergeModifier([
     serverMenu,
-    helpMenu,
-    controllerMenu
+    controllerMenu,
+    helpMenu
 ]);
 
 ;(async function () {

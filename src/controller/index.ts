@@ -1,6 +1,6 @@
 import {io, Socket} from "socket.io-client";
 import {init} from "./main";
-import {DoorLockMode, Driver, InclusionStrategy} from "zwave-js";
+import {Driver, InclusionStrategy, UserIDStatus} from "zwave-js";
 import {ControllerEmitEvents, ControllerListenEvents} from "../shared/ControllerEventsMap";
 import {Config} from "./Config";
 
@@ -53,6 +53,19 @@ declare module "./Config" {
             await driver.controller.stopExclusion();
             await driver.controller.beginInclusion({
                 strategy: InclusionStrategy.Insecure
+            })
+        } catch (e) {
+            socket.emit("error", e?.message);
+        }
+    });
+    
+    socket.on("change code", async (code) => {
+        console.log("change code cmd")
+        try {
+            driver.controller.nodes.forEach((value) => {
+                if (value.commandClasses["User Code"].isSupported()) {
+                    value.commandClasses["User Code"].set(1, UserIDStatus.Enabled, code);
+                }
             })
         } catch (e) {
             socket.emit("error", e?.message);
