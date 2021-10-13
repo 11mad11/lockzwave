@@ -2,6 +2,10 @@ import {HealNodeStatus, InclusionStrategy, InclusionResult, ControllerStatistics
 
 export interface ControllerListenEvents extends Record<string, (...args: any[]) => void> {
     "change code"(index: number, code: string): void
+    
+    "remove code"(index: number): void
+    
+    "lock all"(): void
 }
 
 export interface ControllerEmitEvents extends Record<string, (...args: any[]) => void> {

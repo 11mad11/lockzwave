@@ -37,6 +37,24 @@ export const actionsMenu: ModifierByState = {
                 state.controllerSocket.emit("change code", parseInt(index as string,10), code as string);
             }
         });
+        cmds.push({
+            name: "remove code",
+            async fn() {
+                const {index} = await Prompt.get([{
+                    name: "index",
+                    type: "integer",
+                    minimum: 1,
+                    maximum: 255
+                }]);
+                state.controllerSocket.emit("remove code", parseInt(index as string,10));
+            }
+        });
+        cmds.push({
+            name: "lock all",
+            async fn() {
+                state.controllerSocket.emit("lock all");
+            }
+        });
         
         return cmds;
     }

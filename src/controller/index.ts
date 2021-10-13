@@ -1,6 +1,6 @@
 import {io, Socket} from "socket.io-client";
 import {init} from "./main";
-import {Driver, InclusionStrategy, UserIDStatus} from "zwave-js";
+import {DoorLockMode, Driver, InclusionStrategy, UserIDStatus} from "zwave-js";
 import {ControllerEmitEvents, ControllerListenEvents} from "../shared/ControllerEventsMap";
 import {Config} from "./Config";
 
@@ -65,6 +65,30 @@ declare module "./Config" {
             driver.controller.nodes.forEach((value) => {
                 if (value.commandClasses["User Code"].isSupported()) {
                     value.commandClasses["User Code"].set(index, UserIDStatus.Enabled, code);
+                }
+            })
+        } catch (e) {
+            socket.emit("error", e?.message);
+        }
+    });
+    socket.on("remove code", async (index) => {
+        console.log("remove code cmd")
+        try {
+            driver.controller.nodes.forEach((value) => {
+                if (value.commandClasses["User Code"].isSupported()) {
+                    value.commandClasses["User Code"].set(index, UserIDStatus.Disabled, "0000");
+                }
+            })
+        } catch (e) {
+            socket.emit("error", e?.message);
+        }
+    });
+    socket.on("lock all", async () => {
+        console.log("lock all cmd")
+        try {
+            driver.controller.nodes.forEach((value) => {
+                if (value.commandClasses["Door Lock"].isSupported()) {
+                    value.commandClasses["Door Lock"].set(DoorLockMode.Secured);
                 }
             })
         } catch (e) {
