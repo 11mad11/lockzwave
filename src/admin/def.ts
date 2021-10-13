@@ -1,9 +1,10 @@
 import {Socket} from "socket.io-client";
+import {ControllerEmitEvents, ControllerListenEvents} from "../shared/ControllerEventsMap";
 
 export interface State {
     menuState: MenuState,
     serverSocket?: Socket,
-    controllerSocket?: Socket,
+    controllerSocket?: Socket<ControllerEmitEvents, ControllerListenEvents>,
     url: string
 }
 

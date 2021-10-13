@@ -5,7 +5,7 @@ import {sleep} from "../../shared/helper";
 
 export const controllerMenu: ModifierByState = {//TODO better menu
     [MenuState.Main]: async function (cmds, state) {
-        if (!state.serverSocket || state.controllerSocket)
+        if (!state.serverSocket || state.controllerSocket?.connected)
             return cmds;
     
         cmds.push({
@@ -14,6 +14,9 @@ export const controllerMenu: ModifierByState = {//TODO better menu
                 return new Promise((resolve)=>{
                     state.serverSocket.emit("list");
                     state.serverSocket.once("controllers", async (controllers: string[]) => {
+                        if(!controllers.length)
+                            return resolve();
+                        
                         for (let i = 0; i < controllers.length; i++) {
                             const controller = controllers[i];
                             const cSocket = io("https://zwave-server.cap.11mad11.com" + controller);

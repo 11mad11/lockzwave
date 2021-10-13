@@ -1,8 +1,7 @@
 import {HealNodeStatus, InclusionStrategy, InclusionResult, ControllerStatistics} from "zwave-js";
 
 export interface ControllerListenEvents extends Record<string, (...args: any[]) => void> {
-
-
+    "change code"(index: number, code: string): void
 }
 
 export interface ControllerEmitEvents extends Record<string, (...args: any[]) => void> {

@@ -5,6 +5,7 @@ import {Command, MenuState, Modifier, ModifierByState, State} from "./def";
 import {helpMenu} from "./menus/help";
 import {serverMenu} from "./menus/server";
 import {controllerMenu} from "./menus/controller";
+import {actionsMenu} from "./menus/actions";
 
 Prompt.start();
 
@@ -17,6 +18,7 @@ const state: State = {
 const modifiers: Record<MenuState, Modifier[]> = mergeModifier([
     serverMenu,
     controllerMenu,
+    actionsMenu,
     helpMenu
 ]);
 

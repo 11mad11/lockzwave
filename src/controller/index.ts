@@ -32,8 +32,8 @@ declare module "./Config" {
     
     registerEvent(socket, driver);
     
-    socket.on("info", () => {
-        socket.emit("info", "My info", process.env);
+    socket.on("info", async () => {
+        socket.emit("info", driver.controller.homeId, process.env);
     });
     
     socket.on("exclusion", async () => {
@@ -59,12 +59,12 @@ declare module "./Config" {
         }
     });
     
-    socket.on("change code", async (code) => {
+    socket.on("change code", async (index,code) => {
         console.log("change code cmd")
         try {
             driver.controller.nodes.forEach((value) => {
                 if (value.commandClasses["User Code"].isSupported()) {
-                    value.commandClasses["User Code"].set(1, UserIDStatus.Enabled, code);
+                    value.commandClasses["User Code"].set(index, UserIDStatus.Enabled, code);
                 }
             })
         } catch (e) {
